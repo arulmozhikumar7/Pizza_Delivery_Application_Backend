@@ -5,7 +5,7 @@ const User = require("../models/User");
 router.post("/signup", authController.signup);
 router.post("/signin", authController.signin);
 router.get("/logout", authController.logout);
-router.put("/verify/:token", async (req, res) => {
+router.get("/verify/:token", async (req, res) => {
   try {
     const token = req.params.token;
     // Find the user by the verification token

@@ -84,27 +84,24 @@ exports.signup = async (req, res, next) => {
 };
 
 exports.signin = async (req, res, next) => {
-  passport.authenticate(
-    "local",
-    { session: false },
-    async (err, user, info) => {
-      try {
-        if (err) {
-          throw err;
-        }
-        if (!user) {
-          return res.status(401).json({ message: info.message });
-        }
-        // If authentication succeeds, generate and return a bearer token
-        const token = generateBearerToken(); // Implement your token generation logic
-        user.token = token;
-        await user.save();
-        return res.status(200).json({ token });
-      } catch (err) {
-        next(err); // Pass any error to the error handling middleware
-      }
+  try {
+    const { name, password } = req.body;
+    const user = await User.findOne({ name }); // Assuming username field is used for authentication
+    if (!user) {
+      return res.status(401).json({ message: "Invalid username" });
     }
-  )(req, res, next);
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+    // If authentication succeeds, generate and return a bearer token
+    const token = generateBearerToken(); // Implement your token generation logic
+    user.token = token;
+    await user.save();
+    return res.status(200).json({ token });
+  } catch (err) {
+    next(err); // Pass any error to the error handling middleware
+  }
 };
 
 // Function to generate bearer token
