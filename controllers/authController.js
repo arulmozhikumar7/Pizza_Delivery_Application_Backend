@@ -125,3 +125,49 @@ exports.logout = async (req, res, next) => {
     next(err); // Pass any error to the error handling middleware
   }
 };
+
+function generateResetToken() {
+  return crypto.randomBytes(20).toString("hex");
+}
+
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    // Generate a reset token
+    const resetToken = generateResetToken();
+    // Save the reset token and expiration time in the user's document
+    user.resetToken = resetToken;
+
+    await user.save();
+    // Send an email with the reset link
+    const resetLink = `http://localhost:3000/api/auth/reset-password?token=${resetToken}`;
+    await sendPasswordResetEmail(email, resetLink);
+    return res
+      .status(200)
+      .json({ message: "Password reset link sent successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Function to send the password reset email
+async function sendPasswordResetEmail(email, resetLink) {
+  try {
+    // Define email content
+    const mailOptions = {
+      from: "arulmozhikumar7@gmail.com",
+      to: email,
+      subject: "Password Reset",
+      html: `<p>You are receiving this email because you requested a password reset. Click ${resetLink} to reset your password.</p>`,
+    };
+    // Send email
+    await transporter.sendMail(mailOptions);
+  } catch (err) {
+    throw new Error("Failed to send password reset email");
+  }
+}
