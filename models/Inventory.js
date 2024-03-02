@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 
 const inventorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
+  pizza: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Pizza",
+    required: true,
   },
   quantity: {
     type: Number,
     required: true,
+    default: 0, // Default quantity is 0
   },
 });
 
-const Inventory = mongoose.model("Inventory", inventorySchema);
-module.exports = Inventory;
+module.exports = mongoose.model("Inventory", inventorySchema);
