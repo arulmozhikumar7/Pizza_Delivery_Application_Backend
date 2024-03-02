@@ -5,24 +5,24 @@ const pizzaSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  image: {
-    type: String,
-    required: true,
-  },
   price: {
     type: Number,
     required: true,
   },
-  Ingredients: [
+  ingredients: [
     {
-      name: String,
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Ingredient",
     },
   ],
+  image: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
 });
-const Pizza = mongoose.model("Pizza", pizzaSchema);
-module.exports = Pizza;
+
+module.exports = mongoose.model("Pizza", pizzaSchema);
