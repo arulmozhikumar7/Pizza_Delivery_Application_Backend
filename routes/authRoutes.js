@@ -20,7 +20,16 @@ router.get("/verify/:token", async (req, res) => {
     user.isVerified = true;
     user.verificationToken = null; // Clear verification token
     await user.save();
-    return res.status(200).json({ message: "Email verified successfully" });
+    return res.status(200).send(`
+       <div style="text-align: center; margin-top: 50px;">
+    <h1 style="color: #007bff; font-family: Arial, sans-serif;">
+      Email Verified Successfully.
+    </h1>
+    <p style="font-size: 18px; font-family: Arial, sans-serif;">
+      Close this tab and go back to your website.
+        <a href="http://localhost:5173/Auth" style="color: #007bff; text-decoration: none;">Go back</a>
+    </p>
+  </div>`);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -46,7 +55,7 @@ router.post("/reset-password", async (req, res, next) => {
     user.resetToken = null;
 
     await user.save();
-    return res.status(200).json({ message: "Password reset successful" });
+    return res.status(200).send({ message: "Password reset successful" });
   } catch (err) {
     next(err);
   }
