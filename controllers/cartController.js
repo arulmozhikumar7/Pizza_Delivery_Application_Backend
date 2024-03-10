@@ -62,6 +62,7 @@ exports.removeFromCart = async (req, res) => {
     res
       .status(200)
       .json({ message: "Item removed from cart successfully", cart });
+    console.log("Item removed from cart successfully");
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -71,12 +72,12 @@ exports.removeFromCart = async (req, res) => {
 // Controller to get the contents of the cart
 exports.getCartContents = async (req, res) => {
   try {
-    const userId = req.user._id; // Assuming user ID is available in req.user
+    const { userId } = req.params; // Assuming user ID is available in req.user
 
-    const cart = await Cart.findOne({ user: userId }).populate("items.pizza");
+    let cart = await Cart.findOne({ user: userId }).populate("items.pizza");
 
     if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+      cart = new Cart({ user: userId, items: [] });
     }
 
     res.status(200).json({ cart });
@@ -167,5 +168,33 @@ exports.deleteCart = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.calculateTotalAmount = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    // Find the cart associated with the user ID and populate the items with pizza details
+    const cart = await Cart.findOne({ user: userId }).populate("items.pizza");
+
+    if (!cart) {
+      throw new Error("Cart not found");
+    }
+
+    // Initialize total amount
+    let totalAmount = 0;
+
+    // Iterate through each item in the cart
+    for (const item of cart.items) {
+      // Multiply the quantity of the item by its price and add to total amount
+      totalAmount += item.quantity * item.pizza.price;
+    }
+
+    // Return the total amount
+    console.log("Total Amount:", totalAmount);
+    res.status(200).json({ totalAmount });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to calculate total amount");
   }
 };

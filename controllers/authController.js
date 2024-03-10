@@ -25,7 +25,7 @@ async function sendVerificationEmail(email, verificationToken) {
       from: "arulmozhikumar7@gmail.com",
       to: email,
       subject: "Verify your email",
-      text: `Please click the following link to verify your email: http://localhost:3000/api/auth/verify/${verificationToken}`,
+      html: ` Please click the following link to verify your email: <a href="http://localhost:3000/api/auth/verify/${verificationToken}" >Verify Email</a>`,
     };
     // Send email
     await transporter.sendMail(mailOptions);
@@ -98,7 +98,7 @@ exports.signin = async (req, res, next) => {
     const token = generateBearerToken(); // Implement your token generation logic
     user.token = token;
     await user.save();
-    return res.status(200).json({ token });
+    return res.status(200).json({ token, userId: user._id });
   } catch (err) {
     next(err); // Pass any error to the error handling middleware
   }
@@ -114,7 +114,7 @@ function generateBearerToken() {
 
 exports.logout = async (req, res, next) => {
   try {
-    const user = req.user; // Assuming user is authenticated
+    const user = await User.findById(req.body.userId); // Assuming user is authenticated
     if (!user) {
       return res.status(401).json({ message: "Unauthorized" });
     }

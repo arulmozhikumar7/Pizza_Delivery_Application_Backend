@@ -1,29 +1,77 @@
+const Pizza = require("../models/Pizza");
 const Inventory = require("../models/Inventory");
+const Ingredient = require("../models/Ingredient");
 
-// Function to update inventory when a pizza is added
-exports.updateInventoryOnPizzaAdd = async (req, res) => {
+async function addPizzaToInventory(req, res) {
+  const { pizzaId, quantity } = req.body;
+
   try {
-    const { pizzaId, quantity } = req.body;
-    const inventoryItem = await Inventory.findOne({ pizza: pizzaId });
-    if (inventoryItem) {
-      // If the pizza is already in inventory, increment its quantity
-      inventoryItem.quantity += 1; // Assuming one pizza is added at a time
-      await inventoryItem.save();
-    } else {
-      // If the pizza is not in inventory, create a new inventory item
-      const newInventoryItem = new Inventory({
-        pizza: pizzaId,
-        quantity, // Assuming one pizza is added at a time
-      });
-      await newInventoryItem.save();
+    // Check if pizza exists
+    const pizza = await Pizza.findById(pizzaId).populate("ingredients");
+
+    if (!pizza) {
+      return res.status(404).json({ error: "Pizza not found" });
     }
-    res.status(200).json({ message: "Inventory updated successfully" });
-    console.log("Inventory updated successfully");
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-    console.error("Error updating inventory:", err.message);
+
+    // Check ingredient availability
+    const insufficientIngredient = await checkIngredientsAvailability(
+      pizza.ingredients,
+      quantity
+    );
+
+    // If any ingredient is insufficient, return an error message
+    if (insufficientIngredient) {
+      return res.status(400).json({
+        error: `Insufficient quantity of ${insufficientIngredient.name}`,
+      });
+    }
+
+    // Check if pizza already exists in inventory
+    let inventoryEntry = await Inventory.findOne({ pizza: pizzaId });
+
+    // If pizza doesn't exist in inventory, create a new entry
+    if (!inventoryEntry) {
+      inventoryEntry = new Inventory({
+        pizza: pizzaId,
+        quantity: quantity,
+      });
+    } else {
+      // If pizza already exists in inventory, update quantity
+      inventoryEntry.quantity += quantity;
+    }
+
+    // Save or update inventory entry
+    await inventoryEntry.save();
+
+    // Update ingredient quantities
+    await updateIngredientQuantities(pizza.ingredients, quantity);
+
+    res.status(201).json({ message: "Pizza added to inventory successfully" });
+  } catch (error) {
+    console.error("Error adding pizza to inventory:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
-};
+}
+
+async function checkIngredientsAvailability(ingredients, quantity) {
+  for (const ingredient of ingredients) {
+    const requiredQuantity = ingredient.quantity * quantity;
+    if (ingredient.quantity < requiredQuantity) {
+      return ingredient;
+    }
+  }
+  return null; // Sufficient quantity of all ingredients
+}
+
+async function updateIngredientQuantities(ingredients, quantity) {
+  for (const ingredient of ingredients) {
+    const requiredQuantity = ingredient.quantity * quantity;
+    ingredient.quantity -= requiredQuantity;
+    await ingredient.save();
+  }
+}
+
+exports.addPizzaToInventory = addPizzaToInventory;
 
 // Function to get current inventory status
 exports.getInventoryStatus = async (req, res) => {

@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 router.post("/signup", authController.signup);
 router.post("/signin", authController.signin);
-router.get("/logout", authController.logout);
+router.post("/logout", authController.logout);
 router.get("/verify/:token", async (req, res) => {
   try {
     const token = req.params.token;
@@ -27,7 +27,7 @@ router.get("/verify/:token", async (req, res) => {
     </h1>
     <p style="font-size: 18px; font-family: Arial, sans-serif;">
       Close this tab and go back to your website.
-        <a href="http://localhost:5173/Auth" style="color: #007bff; text-decoration: none;">Go back</a>
+        <a href="http://localhost:5173/" style="color: #007bff; text-decoration: none;">Go back</a>
     </p>
   </div>`);
   } catch (err) {

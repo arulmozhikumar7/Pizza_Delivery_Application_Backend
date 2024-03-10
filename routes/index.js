@@ -4,9 +4,12 @@ const authRoutes = require("./authRoutes");
 const pizzaRoutes = require("./pizzaRoutes");
 const ingredientRoutes = require("./ingredientRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
+const cartRoutes = require("./cartRoutes");
+const paymentRoutes = require("./paymentRoute");
 router.use("/auth", authRoutes);
 router.use("/pizza", pizzaRoutes);
 router.use("/ingredient", ingredientRoutes);
 router.use("/inventory", inventoryRoutes);
-
+router.use("/cart", cartRoutes);
+router.use("/payment", paymentRoutes);
 module.exports = router;

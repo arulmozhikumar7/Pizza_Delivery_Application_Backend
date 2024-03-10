@@ -17,8 +17,8 @@ router.delete(
 router.put("/reduce/:pizzaId/:userId", cartController.reduceItemQuantity);
 router.put("/increase/:pizzaId/:userId", cartController.increaseItemQuantity);
 // Route to get the contents of the cart
-router.get("/", cartController.getCartContents);
-
+router.get("/:userId", cartController.getCartContents);
+router.get("/total/:userId", cartController.calculateTotalAmount);
 router.delete("/delete/:userId", cartController.deleteCart);
 
 module.exports = router;
