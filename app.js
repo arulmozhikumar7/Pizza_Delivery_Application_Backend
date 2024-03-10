@@ -2,11 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 const cors = require("cors");
-app.use(
-  cors({
-    origin: "pizza-delivery-application-frontend.vercel.app",
-  })
-);
+app.use(cors());
 const routes = require("./routes");
 
 const db = mongoose.connect(
