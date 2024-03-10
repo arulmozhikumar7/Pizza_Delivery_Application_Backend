@@ -8,10 +8,6 @@ app.use(
   })
 );
 const routes = require("./routes");
-//Models
-const Pizza = require("./models/Pizza");
-const Inventory = require("./models/Inventory");
-const User = require("./models/User");
 
 const db = mongoose.connect("mongodb://localhost:27017/PIZZA_APPLICATION");
 db.then(() => {

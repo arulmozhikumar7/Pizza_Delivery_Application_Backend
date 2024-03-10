@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require("../controllers/authController");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+router.get("/", authController.getAllusers);
 router.post("/signup", authController.signup);
 router.post("/signin", authController.signin);
 router.post("/logout", authController.logout);
@@ -37,7 +38,7 @@ router.get("/verify/:token", async (req, res) => {
 router.post("/forgotpassword", authController.forgotPassword);
 router.post("/reset-password", async (req, res, next) => {
   try {
-    const { token } = req.query;
+    const { token } = req.body;
     const { newPassword } = req.body;
     // Find the user by the reset token and check if it's still valid
     const user = await User.findOne({
@@ -53,6 +54,8 @@ router.post("/reset-password", async (req, res, next) => {
     // Update the user's password and clear the reset token
     user.password = hashedPassword;
     user.resetToken = null;
+    console.log(token);
+    console.log(req.body);
 
     await user.save();
     return res.status(200).send({ message: "Password reset successful" });

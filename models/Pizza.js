@@ -9,12 +9,6 @@ const pizzaSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  ingredients: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Ingredient",
-    },
-  ],
   image: {
     type: String,
     required: true,

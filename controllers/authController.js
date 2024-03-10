@@ -98,7 +98,9 @@ exports.signin = async (req, res, next) => {
     const token = generateBearerToken(); // Implement your token generation logic
     user.token = token;
     await user.save();
-    return res.status(200).json({ token, userId: user._id });
+    return res
+      .status(200)
+      .json({ token, userId: user._id, isAdmin: user.isAdmin });
   } catch (err) {
     next(err); // Pass any error to the error handling middleware
   }
@@ -145,7 +147,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     await user.save();
     // Send an email with the reset link
-    const resetLink = `http://localhost:3000/api/auth/reset-password?token=${resetToken}`;
+    const resetLink = `http://localhost:5173/api/auth/reset-password?token=${resetToken}`;
     await sendPasswordResetEmail(email, resetLink);
     return res
       .status(200)
@@ -163,7 +165,7 @@ async function sendPasswordResetEmail(email, resetLink) {
       from: "arulmozhikumar7@gmail.com",
       to: email,
       subject: "Password Reset",
-      html: `<p>You are receiving this email because you requested a password reset. Click ${resetLink} to reset your password.</p>`,
+      html: `<p>You are receiving this email because you requested a password reset. Click <a href="${resetLink}">here</a> to reset your password.</p>`,
     };
     // Send email
     await transporter.sendMail(mailOptions);
@@ -171,3 +173,12 @@ async function sendPasswordResetEmail(email, resetLink) {
     throw new Error("Failed to send password reset email");
   }
 }
+
+exports.getAllusers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (err) {
+    next(err);
+  }
+};
