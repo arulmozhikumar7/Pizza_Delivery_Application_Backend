@@ -25,7 +25,7 @@ async function sendVerificationEmail(email, verificationToken) {
       from: "arulmozhikumar7@gmail.com",
       to: email,
       subject: "Verify your email",
-      html: ` Please click the following link to verify your email: <a href="http://localhost:3000/api/auth/verify/${verificationToken}" >Verify Email</a>`,
+      html: ` Please click the following link to verify your email: <a href="https://pizza-delivery-application-backend.onrender.com/api/auth/verify/${verificationToken}" >Verify Email</a>`,
     };
     // Send email
     await transporter.sendMail(mailOptions);
@@ -147,7 +147,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     await user.save();
     // Send an email with the reset link
-    const resetLink = `http://localhost:5173/api/auth/reset-password?token=${resetToken}`;
+    const resetLink = `https://pizza-delivery-application-frontend.vercel.app/api/auth/reset-password?token=${resetToken}`;
     await sendPasswordResetEmail(email, resetLink);
     return res
       .status(200)

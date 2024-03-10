@@ -28,7 +28,7 @@ router.get("/verify/:token", async (req, res) => {
     </h1>
     <p style="font-size: 18px; font-family: Arial, sans-serif;">
       Close this tab and go back to your website.
-        <a href="http://localhost:5173/" style="color: #007bff; text-decoration: none;">Go back</a>
+        <a href="https://pizza-delivery-application-frontend.vercel.app" style="color: #007bff; text-decoration: none;">Go back</a>
     </p>
   </div>`);
   } catch (err) {
