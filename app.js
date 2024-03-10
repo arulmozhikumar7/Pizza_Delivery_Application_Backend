@@ -9,7 +9,9 @@ app.use(
 );
 const routes = require("./routes");
 
-const db = mongoose.connect("mongodb://localhost:27017/PIZZA_APPLICATION");
+const db = mongoose.connect(
+  "mongodb+srv://arul27032004:27032004arul@cluster0.skmaqx2.mongodb.net/pizzaapplication"
+);
 db.then(() => {
   console.log("Connected to MongoDB");
 }).catch((err) => {
